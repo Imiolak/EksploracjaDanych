@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EuroFunds.Database
 {
-    public class Class1
+    class TeritoryType
     {
     }
 }
