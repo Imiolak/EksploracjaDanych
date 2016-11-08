@@ -10,5 +10,8 @@ namespace EuroFunds.Database
     {
         public int id { get; set; }
         public String name { get; set; }
+        public String url { get; set; }
+        public bool dataLoaded { get; set; }
+        public ICollection<Project> projects { get; set; }
     }
 }

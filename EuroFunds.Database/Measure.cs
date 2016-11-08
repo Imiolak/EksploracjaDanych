@@ -10,5 +10,7 @@ namespace EuroFunds.Database
     {
         public int id { get; set; }
         public String name { get; set; }
+        public int submeasureId { get; set; }
+        public int priorityId { get; set; }
     }
 }
