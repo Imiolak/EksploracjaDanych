@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using EuroFunds.Database.Models;
+using System.Collections.Generic;
 
 namespace EuroFunds.DataLoader.DataSource.Models
 {

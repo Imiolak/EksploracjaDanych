@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EuroFunds.Database.Models
 {
-    public class Programme
+    public class Beneficiary
     {
         public int Id { get; set; }
         [MaxLength(150)]

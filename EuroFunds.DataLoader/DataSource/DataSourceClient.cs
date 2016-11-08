@@ -1,4 +1,5 @@
-﻿using EuroFunds.DataLoader.DataSource.Models;
+﻿using EuroFunds.Database.Models;
+using EuroFunds.DataLoader.DataSource.Models;
 using RestSharp;
 using System;
 using System.IO;
@@ -39,7 +40,7 @@ namespace EuroFunds.DataLoader.DataSource
                 throw new Exception();
             }
 
-            return response.Data.Resources.OrderByDescending(resource => resource.Created).First();
+            return response.Data.Resources.OrderByDescending(resource => resource.CreatedDate).First();
         }
 
         public FileInfo DownloadResource(Resource resource)
