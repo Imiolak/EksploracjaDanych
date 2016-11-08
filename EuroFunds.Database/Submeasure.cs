@@ -8,5 +8,7 @@ namespace EuroFunds.Database
 {
     class Submeasure
     {
+        public int id { get; set; }
+        public String name { get; set; }
     }
 }

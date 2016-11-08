@@ -8,5 +8,7 @@ namespace EuroFunds.Database
 {
     class Priority
     {
+        public int id { get; set; }
+        public String name { get; set; }
     }
 }

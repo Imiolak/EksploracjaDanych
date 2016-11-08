@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace EuroFunds.Database
 {
-    class Class1
+    class Programme
     {
+        public int id { get; set; }
+        public String name { get; set; }
     }
 }
