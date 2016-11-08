@@ -15,15 +15,14 @@ namespace EuroFunds.Database.Models
         public DateTime ProjectEndDate { get; set; }
         public bool UnderCompetative { get; set; }
 
-        public int TeritoryTypeId { get; set; }
-        public int MeasureId { get; set; }
-        public int SubmeasureId { get; set; }
-        public int ResourceId { get; set; }
-        public int ProjectLocationId { get; set; }
-        public int FundId { get; set; }
-        public int FormOfFinanceId { get; set; }
-        public int BeneficiaryNameId { get; set; }
-        public int AreaOfEconomicActivityId { get; set; }
-        public int AreaOfProjectInterventionId { get; set; }
+        public virtual TeritoryType TeritoryType{ get; set; }
+        public virtual Measure Measure{ get; set; }
+        public virtual Submeasure Submeasure { get; set; }
+        public virtual ProjectLocation ProjectLocation { get; set; }
+        public virtual Fund Fund { get; set; }
+        public virtual FormOfFinance FormOfFinance { get; set; }
+        public virtual BeneficiaryName BeneficiaryName { get; set; }
+        public virtual AreaOfEconomicActivity AreaOfEconomicActivity { get; set; }
+        public virtual AreaOfProjectIntervention AreaOfProjectIntervention { get; set; }
     }
 }
