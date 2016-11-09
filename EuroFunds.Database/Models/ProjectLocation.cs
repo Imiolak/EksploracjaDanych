@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EuroFunds.Database.Models
 {
+    [Table("ProjectLocations")]
     public class ProjectLocation
     {
         public int Id { get; set; }

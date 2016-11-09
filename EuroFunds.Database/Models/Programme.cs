@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EuroFunds.Database.Models
 {
+    [Table("Programmes")]
     public class Programme
     {
         public int Id { get; set; }

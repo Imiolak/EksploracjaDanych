@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EuroFunds.Database.Models
 {
+    [Table("TerritoryTypes")]
     public class TerritoryType
     {
         public int Id { get; set; }
