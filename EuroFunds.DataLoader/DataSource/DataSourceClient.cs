@@ -40,7 +40,7 @@ namespace EuroFunds.DataLoader.DataSource
                 throw new Exception();
             }
 
-            return response.Data.Resources.OrderByDescending(resource => resource.CreatedDate).First();
+            return response.Data.Resources.OrderByDescending(resource => resource.Created).First();
         }
 
         public FileInfo DownloadResource(Resource resource)
