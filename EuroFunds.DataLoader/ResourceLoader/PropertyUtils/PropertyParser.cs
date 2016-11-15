@@ -1,6 +1,7 @@
 ﻿using EuroFunds.Database.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -10,7 +11,7 @@ namespace EuroFunds.DataLoader.ResourceLoader.PropertyUtils
     {
         public static decimal ParseDecimal(string value)
         {
-            return decimal.Round(decimal.Parse(value), 2);
+            return decimal.Round(decimal.Parse(value, CultureInfo.InvariantCulture), 2);
         }
 
         public static float ParseFloat(string value)
