@@ -1,22 +1,69 @@
-﻿using EuroFunds.DataLoader.DataSource;
+﻿using EuroFunds.Database.Models;
+using EuroFunds.Database.Repositories;
+using EuroFunds.DataLoader.DataSource;
 using EuroFunds.DataLoader.ResourceLoader;
 using EuroFunds.DataLoader.ResourceLoader.Reader;
-using System.IO;
+using System;
+using System.Diagnostics;
+using System.Linq;
 
 namespace EuroFunds.DataLoader
 {
     public class DataLoader
     {
-        private const string TmpFileSourcePath = @"D:\Storage\Uni\9\Eksploracja\Projekt\Sample\Lista_projektow_FE_2014_2020_011116.xlsx";
-
         public void Load()
         {
-            var loader = new ProjectLoader(new OpenXmlResourceReader());
-            var projects = loader.Read(new FileInfo(TmpFileSourcePath));
+            var stopwatch = Stopwatch.StartNew();
+            Console.WriteLine("Loading projects..");
 
-            using (var client = new DataSourceClient())
+            var client = new DataSourceClient();
+
+            var mostRecentInSource = client.GetMostRecentResource();
+            var mostRecentInDb = ResourceRepository.GetMostRecentResource();
+
+            if (NoResourcesInDbYet(mostRecentInDb)
+                || WasNewResourceAdded(mostRecentInSource, mostRecentInDb)
+                || WasLastResourceUpdated(mostRecentInSource, mostRecentInDb))
             {
+                Console.WriteLine("New or updated reasource found. Downloading..");
+
+                var downloadedResource = client.DownloadResource(mostRecentInSource);
+                var projectLoader = new ProjectLoader(new OpenXmlResourceReader());
+
+                Console.WriteLine("Reading resource..");
+
+                var projectsInResource = projectLoader.Read(downloadedResource);
+                var newProjects = ProjectRepository.FilterAlreadyExistingProjects(projectsInResource);
+
+                Console.WriteLine($"{newProjects.Count()} new projects found. Adding to DB..");
+
+                ProjectRepository.AddOrUpdateMany(newProjects);
+                ResourceRepository.AddOrUpdate(mostRecentInSource);
+
+                client.DeleteTemporaryDirectory();
+
+                Console.WriteLine("Loading projects done.");
             }
+
+            stopwatch.Stop();
+            Console.WriteLine($"Took {stopwatch.Elapsed.Minutes}:{stopwatch.Elapsed.Seconds}");
         }
+
+        #region Helpers
+        private static bool NoResourcesInDbYet(Resource mostRecentInDb)
+        {
+            return mostRecentInDb == null;
+        }
+
+        private static bool WasNewResourceAdded(Resource mostRecentInSource, Resource mostRecentInDb)
+        {
+            return mostRecentInSource.Id != mostRecentInDb.Id;
+        }
+
+        private static bool WasLastResourceUpdated(Resource mostRecentInSource, Resource mostRecentInDb)
+        {
+            return mostRecentInSource.LastModified != null && mostRecentInSource.LastModified > mostRecentInDb.LastModified;
+        }
+        #endregion
     }
 }

@@ -8,6 +8,7 @@ namespace EuroFunds.Database.Models
     public class Fund
     {
         public int Id { get; set; }
+
         [MaxLength(10)]
         public string Name { get; set; }
 

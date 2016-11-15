@@ -3,7 +3,7 @@ namespace EuroFunds.Database.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class InitialModel : DbMigration
+    public partial class InitialMigration : DbMigration
     {
         public override void Up()
         {
@@ -12,10 +12,12 @@ namespace EuroFunds.Database.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        OrderNo = c.String(),
-                        Name = c.String(),
+                        OrderNo = c.String(maxLength: 3),
+                        Name = c.String(maxLength: 450),
                     })
-                .PrimaryKey(t => t.Id);
+                .PrimaryKey(t => t.Id)
+                .Index(t => t.OrderNo, unique: true)
+                .Index(t => t.Name, unique: true);
             
             CreateTable(
                 "dbo.Projects",
@@ -79,17 +81,19 @@ namespace EuroFunds.Database.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        OrderNo = c.String(),
-                        Name = c.String(),
+                        OrderNo = c.String(maxLength: 3),
+                        Name = c.String(maxLength: 450),
                     })
-                .PrimaryKey(t => t.Id);
+                .PrimaryKey(t => t.Id)
+                .Index(t => t.OrderNo, unique: true)
+                .Index(t => t.Name, unique: true);
             
             CreateTable(
                 "dbo.Beneficiaries",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        Name = c.String(maxLength: 150),
+                        Name = c.String(maxLength: 300),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -98,20 +102,24 @@ namespace EuroFunds.Database.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        OrderNo = c.String(),
-                        Name = c.String(),
+                        OrderNo = c.String(maxLength: 3),
+                        Name = c.String(maxLength: 450),
                     })
-                .PrimaryKey(t => t.Id);
+                .PrimaryKey(t => t.Id)
+                .Index(t => t.OrderNo, unique: true)
+                .Index(t => t.Name, unique: true);
             
             CreateTable(
                 "dbo.FormsOfFinance",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        OrderNo = c.String(),
-                        Name = c.String(),
+                        OrderNo = c.String(maxLength: 3),
+                        Name = c.String(maxLength: 200),
                     })
-                .PrimaryKey(t => t.Id);
+                .PrimaryKey(t => t.Id)
+                .Index(t => t.OrderNo, unique: true)
+                .Index(t => t.Name, unique: true);
             
             CreateTable(
                 "dbo.Funds",
@@ -127,7 +135,7 @@ namespace EuroFunds.Database.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        Name = c.String(),
+                        Name = c.String(maxLength: 20),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -136,12 +144,13 @@ namespace EuroFunds.Database.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        OrderNo = c.String(),
-                        Name = c.String(),
+                        OrderNo = c.String(maxLength: 8),
+                        Name = c.String(maxLength: 450),
                         Priority_Id = c.Int(),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Priorities", t => t.Priority_Id)
+                .Index(t => new { t.OrderNo, t.Name }, unique: true, name: "IX_Measure")
                 .Index(t => t.Priority_Id);
             
             CreateTable(
@@ -149,22 +158,24 @@ namespace EuroFunds.Database.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        OrderNo = c.String(),
-                        Name = c.String(),
+                        OrderNo = c.String(maxLength: 4),
+                        Name = c.String(maxLength: 450),
                     })
-                .PrimaryKey(t => t.Id);
+                .PrimaryKey(t => t.Id)
+                .Index(t => new { t.OrderNo, t.Name }, unique: true, name: "IX_Priority");
             
             CreateTable(
                 "dbo.Submeasures",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        OrderNo = c.String(),
-                        Name = c.String(),
+                        OrderNo = c.String(maxLength: 12),
+                        Name = c.String(maxLength: 450),
                         Measure_Id = c.Int(),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Measures", t => t.Measure_Id)
+                .Index(t => new { t.OrderNo, t.Name }, unique: true, name: "IX_Submeasure")
                 .Index(t => t.Measure_Id);
             
             CreateTable(
@@ -172,7 +183,7 @@ namespace EuroFunds.Database.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        Name = c.String(maxLength: 150),
+                        Name = c.String(maxLength: 300),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -190,20 +201,24 @@ namespace EuroFunds.Database.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        OrderNo = c.String(),
-                        Name = c.String(),
+                        OrderNo = c.String(maxLength: 3),
+                        Name = c.String(maxLength: 450),
                     })
-                .PrimaryKey(t => t.Id);
+                .PrimaryKey(t => t.Id)
+                .Index(t => t.OrderNo, unique: true)
+                .Index(t => t.Name, unique: true);
             
             CreateTable(
                 "dbo.TerritoryTypes",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        OrderNo = c.String(),
-                        Name = c.String(),
+                        OrderNo = c.String(maxLength: 3),
+                        Name = c.String(maxLength: 450),
                     })
-                .PrimaryKey(t => t.Id);
+                .PrimaryKey(t => t.Id)
+                .Index(t => t.OrderNo, unique: true)
+                .Index(t => t.Name, unique: true);
             
             CreateTable(
                 "dbo.Resources",
@@ -213,7 +228,7 @@ namespace EuroFunds.Database.Migrations
                         Name = c.String(),
                         Url = c.String(),
                         Created = c.DateTime(nullable: false),
-                        LastModified = c.DateTime(nullable: false),
+                        LastModified = c.DateTime(),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -236,8 +251,21 @@ namespace EuroFunds.Database.Migrations
             DropForeignKey("dbo.Projects", "Beneficiary_Id", "dbo.Beneficiaries");
             DropForeignKey("dbo.Projects", "AreaOfProjectIntervention_Id", "dbo.AreasOfProjectIntervention");
             DropForeignKey("dbo.Projects", "AreaOfEconomicActivity_Id", "dbo.AreasOfEconomicActivity");
+            DropIndex("dbo.TerritoryTypes", new[] { "Name" });
+            DropIndex("dbo.TerritoryTypes", new[] { "OrderNo" });
+            DropIndex("dbo.ProjectObjectives", new[] { "Name" });
+            DropIndex("dbo.ProjectObjectives", new[] { "OrderNo" });
             DropIndex("dbo.Submeasures", new[] { "Measure_Id" });
+            DropIndex("dbo.Submeasures", "IX_Submeasure");
+            DropIndex("dbo.Priorities", "IX_Priority");
             DropIndex("dbo.Measures", new[] { "Priority_Id" });
+            DropIndex("dbo.Measures", "IX_Measure");
+            DropIndex("dbo.FormsOfFinance", new[] { "Name" });
+            DropIndex("dbo.FormsOfFinance", new[] { "OrderNo" });
+            DropIndex("dbo.ESFSecondaryThemes", new[] { "Name" });
+            DropIndex("dbo.ESFSecondaryThemes", new[] { "OrderNo" });
+            DropIndex("dbo.AreasOfProjectIntervention", new[] { "Name" });
+            DropIndex("dbo.AreasOfProjectIntervention", new[] { "OrderNo" });
             DropIndex("dbo.Projects", new[] { "TerritoryType_Id" });
             DropIndex("dbo.Projects", new[] { "ProjectObjective_Id" });
             DropIndex("dbo.Projects", new[] { "ProjectLocation_Id" });
@@ -251,6 +279,8 @@ namespace EuroFunds.Database.Migrations
             DropIndex("dbo.Projects", new[] { "Beneficiary_Id" });
             DropIndex("dbo.Projects", new[] { "AreaOfProjectIntervention_Id" });
             DropIndex("dbo.Projects", new[] { "AreaOfEconomicActivity_Id" });
+            DropIndex("dbo.AreasOfEconomicActivity", new[] { "Name" });
+            DropIndex("dbo.AreasOfEconomicActivity", new[] { "OrderNo" });
             DropTable("dbo.Resources");
             DropTable("dbo.TerritoryTypes");
             DropTable("dbo.ProjectObjectives");

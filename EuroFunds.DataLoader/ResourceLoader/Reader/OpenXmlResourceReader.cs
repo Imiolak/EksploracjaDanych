@@ -20,7 +20,7 @@ namespace EuroFunds.DataLoader.ResourceLoader.Reader
                 var sheetData = sheet.Worksheet.Elements<SheetData>().First();
                 var cellsInRow = sheetData.Elements<Row>().ElementAt(5).Elements<Cell>().Count();
                 
-                foreach (var row in sheetData.Elements<Row>().Skip(4).Take(5))
+                foreach (var row in sheetData.Elements<Row>().Skip(4))
                 {
                     var cellValues = new string[cellsInRow];
 

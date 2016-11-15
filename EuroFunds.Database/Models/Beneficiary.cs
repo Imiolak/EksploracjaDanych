@@ -8,7 +8,8 @@ namespace EuroFunds.Database.Models
     public class Beneficiary
     {
         public int Id { get; set; }
-        [MaxLength(150)]
+
+        [MaxLength(300)]
         public string Name { get; set; }
 
         public virtual ICollection<Project> Projects { get; set; } = new List<Project>();

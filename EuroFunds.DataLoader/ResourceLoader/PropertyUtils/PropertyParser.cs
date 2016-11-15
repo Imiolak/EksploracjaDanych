@@ -71,10 +71,7 @@ namespace EuroFunds.DataLoader.ResourceLoader.PropertyUtils
         {
             if (value == "Brak poddziałania")
             {
-                return new Submeasure
-                {
-                    Name = "Brak"
-                };
+                return Submeasure.NullSubmeasure;
             }
 
             var orderNo = value.Split(' ').First();
@@ -143,6 +140,8 @@ namespace EuroFunds.DataLoader.ResourceLoader.PropertyUtils
         public static ProjectObjective ParseProjectObjective(string value)
         {
             var orderNo = value.Split(' ').First();
+            if (orderNo.EndsWith("_POWR"))
+                orderNo = orderNo.Substring(0, orderNo.Length - "_POWR".Length);
 
             return new ProjectObjective
             {
@@ -157,7 +156,7 @@ namespace EuroFunds.DataLoader.ResourceLoader.PropertyUtils
             {
                 return new ESFSecondaryTheme
                 {
-                    Name = "Nie dotyczy"
+                    Name = "Brak"
                 };
             }
 

@@ -16,6 +16,7 @@ namespace EuroFunds.Database.DAO
         public DbSet<Beneficiary> Beneficiaries { get; set; }
         public DbSet<Fund> Funds { get; set; }
         public DbSet<Programme> Programmes { get; set; }
+        public DbSet<Priority> Priorities { get; set; }
         public DbSet<Measure> Measures { get; set; }
         public DbSet<Submeasure> Submeasures { get; set; }
         public DbSet<FormOfFinance> FormsOfFinance { get; set; }

@@ -10,6 +10,6 @@ namespace EuroFunds.Database.Models
         public string Name { get; set; }
         public string Url { get; set; }
         public DateTime Created { get; set; }
-        public DateTime LastModified { get; set; }
+        public DateTime? LastModified { get; set; }
     }
 }

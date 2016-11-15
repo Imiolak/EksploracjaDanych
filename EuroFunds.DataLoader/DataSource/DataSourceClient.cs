@@ -8,7 +8,7 @@ using System.Net;
 
 namespace EuroFunds.DataLoader.DataSource
 {
-    public class DataSourceClient : IDisposable
+    public class DataSourceClient
     {
         private const string BaseUrl = "https://danepubliczne.gov.pl";
         private const string RequestResource = "api/3/action/package_show";
@@ -62,7 +62,7 @@ namespace EuroFunds.DataLoader.DataSource
             return fileInfo;
         }
 
-        public void Dispose()
+        public void DeleteTemporaryDirectory()
         {
             Directory.Delete(TempDownloadFolder, recursive: true);
         }

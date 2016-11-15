@@ -9,7 +9,7 @@ namespace EuroFunds.DataLoader.ResourceLoader
     {
         public static Project CreateFromStringArray(string[] row)
         {
-            return new Project
+            var project = new Project
             {
                 ProjectName = row[PropertyIndexes.ProjectName],
                 ProjectSummary = row[PropertyIndexes.ProjectSummary],
@@ -17,12 +17,14 @@ namespace EuroFunds.DataLoader.ResourceLoader
                 Beneficiary = PropertyParser.ParseBeneficiary(row[PropertyIndexes.Beneficiary]),
                 Fund = PropertyParser.ParseFund(row[PropertyIndexes.Fund]),
                 Programme = PropertyParser.ParseProgramme(row[PropertyIndexes.Programme]),
+                Priority = PropertyParser.ParsePriority(row[PropertyIndexes.Priority]),
                 Measure = PropertyParser.ParseMeasure(row[PropertyIndexes.Measure]),
                 Submeasure = PropertyParser.ParseSubmeasure(row[PropertyIndexes.Submeasure]),
                 TotalProjectValue = PropertyParser.ParseDecimal(row[PropertyIndexes.TotalProjectValue]),
                 TotalEligibleValue = PropertyParser.ParseDecimal(row[PropertyIndexes.TotalEligibleValue]),
                 AmountOfEUCofinancing = PropertyParser.ParseDecimal(row[PropertyIndexes.AmountOfEUCofinancing]),
-                EUCofinancingRate = PropertyParser.ParseFloat(row[PropertyIndexes.EUCofinancingRate])/100,
+                EUCofinancingRate = PropertyParser.ParseFloat(row[PropertyIndexes.EUCofinancingRate]) / 100,
+
                 FormOfFinance = PropertyParser.ParseFormOfFinance(row[PropertyIndexes.FormOfFinance]),
                 //ProjectLocation = 
                 TerritoryType = PropertyParser.ParseTerritoryType(row[PropertyIndexes.TerritoryType]),
@@ -39,6 +41,14 @@ namespace EuroFunds.DataLoader.ResourceLoader
                     PropertyParser.ParseImplementedUnderTerritorialDeliveryMechanisms(
                         row[PropertyIndexes.ImplementedUnderTerritorialDeliveryMechanisms])
             };
+
+            project.Measure.Priority = project.Priority;
+            if (!project.Submeasure.Equals(Submeasure.NullSubmeasure))
+            {
+                project.Submeasure.Measure = project.Measure;
+            }
+            
+            return project;
         }
 
         public static IEnumerable<Project> CreateFromManyStringArrays(IEnumerable<string[]> rows)
