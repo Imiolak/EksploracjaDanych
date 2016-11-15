@@ -1,6 +1,8 @@
 ﻿using EuroFunds.Database.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace EuroFunds.DataLoader.ResourceLoader.PropertyUtils
 {
@@ -94,10 +96,24 @@ namespace EuroFunds.DataLoader.ResourceLoader.PropertyUtils
             };
         }
 
-        //public static ProjectLocation ParseProjectLocation(string value)
-        //{
+        public static ICollection<ProjectLocation> ParseProjectLocation(string value)
+        {
+            if (value == "Cały Kraj")
+            {
+                return new List<ProjectLocation> { ProjectLocation.WholeCountry };
+            }
             
-        //}
+            var regex = new Regex(@"WOJ.: ([^,^\s]*)");
+            var matches = regex.Matches(value);
+
+            return (from Match match in matches select match.Groups[1].Value)
+                .Distinct()
+                .Select(m => new ProjectLocation
+                {
+                    Name = m
+                })
+                .ToList();
+        }
 
         public static TerritoryType ParseTerritoryType(string value)
         {

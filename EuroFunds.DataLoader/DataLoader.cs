@@ -46,7 +46,7 @@ namespace EuroFunds.DataLoader
             }
 
             stopwatch.Stop();
-            Console.WriteLine($"Took {stopwatch.Elapsed.Minutes}:{stopwatch.Elapsed.Seconds}");
+            Console.WriteLine($"Took {stopwatch.Elapsed}");
         }
 
         #region Helpers

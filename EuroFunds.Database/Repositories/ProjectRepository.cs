@@ -112,6 +112,22 @@ namespace EuroFunds.Database.Repositories
                 project.FormOfFinance = formOfFinance;
             }
 
+            var allLocations = context.ProjectLocations.ToList();
+            var newLocations = new List<ProjectLocation>();
+            foreach (var projectLocation in project.ProjectLocations)
+            {
+                ProjectLocation location;
+                if ((location = allLocations.SingleOrDefault(l => l.Name == projectLocation.Name)) != null)
+                {
+                    newLocations.Add(location);
+                }
+                else
+                {
+                    newLocations.Add(projectLocation);
+                }
+            }
+            project.ProjectLocations = newLocations;
+
             TerritoryType territoryType;
             if ((territoryType = 
                 context.TerritoryTypes.SingleOrDefault(t => t.OrderNo == project.TerritoryType.OrderNo)) != null)

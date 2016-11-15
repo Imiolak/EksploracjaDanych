@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -28,8 +29,8 @@ namespace EuroFunds.Database.Models
         public virtual Measure Measure { get; set; }
         public virtual Submeasure Submeasure { get; set; }
         public virtual FormOfFinance FormOfFinance { get; set; }
-        public virtual ProjectLocation ProjectLocation { get; set; }
-        public virtual TerritoryType TerritoryType{ get; set; }
+        public virtual ICollection<ProjectLocation> ProjectLocations { get; set; }
+        public virtual TerritoryType TerritoryType { get; set; }
         public virtual AreaOfEconomicActivity AreaOfEconomicActivity { get; set; }
         public virtual AreaOfProjectIntervention AreaOfProjectIntervention { get; set; }
         public virtual ProjectObjective ProjectObjective { get; set; }

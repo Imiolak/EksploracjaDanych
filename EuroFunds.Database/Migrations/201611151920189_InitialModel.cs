@@ -3,7 +3,7 @@ namespace EuroFunds.Database.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class InitialMigration : DbMigration
+    public partial class InitialModel : DbMigration
     {
         public override void Up()
         {
@@ -44,7 +44,6 @@ namespace EuroFunds.Database.Migrations
                         Measure_Id = c.Int(),
                         Submeasure_Id = c.Int(),
                         Programme_Id = c.Int(),
-                        ProjectLocation_Id = c.Int(),
                         ProjectObjective_Id = c.Int(),
                         TerritoryType_Id = c.Int(),
                     })
@@ -59,7 +58,6 @@ namespace EuroFunds.Database.Migrations
                 .ForeignKey("dbo.Measures", t => t.Measure_Id)
                 .ForeignKey("dbo.Submeasures", t => t.Submeasure_Id)
                 .ForeignKey("dbo.Programmes", t => t.Programme_Id)
-                .ForeignKey("dbo.ProjectLocations", t => t.ProjectLocation_Id)
                 .ForeignKey("dbo.ProjectObjectives", t => t.ProjectObjective_Id)
                 .ForeignKey("dbo.TerritoryTypes", t => t.TerritoryType_Id)
                 .Index(t => t.AreaOfEconomicActivity_Id)
@@ -72,7 +70,6 @@ namespace EuroFunds.Database.Migrations
                 .Index(t => t.Measure_Id)
                 .Index(t => t.Submeasure_Id)
                 .Index(t => t.Programme_Id)
-                .Index(t => t.ProjectLocation_Id)
                 .Index(t => t.ProjectObjective_Id)
                 .Index(t => t.TerritoryType_Id);
             
@@ -192,9 +189,10 @@ namespace EuroFunds.Database.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        Name = c.String(),
+                        Name = c.String(maxLength: 50),
                     })
-                .PrimaryKey(t => t.Id);
+                .PrimaryKey(t => t.Id)
+                .Index(t => t.Name, unique: true);
             
             CreateTable(
                 "dbo.ProjectObjectives",
@@ -232,13 +230,27 @@ namespace EuroFunds.Database.Migrations
                     })
                 .PrimaryKey(t => t.Id);
             
+            CreateTable(
+                "dbo.ProjectLocationProjects",
+                c => new
+                    {
+                        ProjectLocation_Id = c.Int(nullable: false),
+                        Project_Id = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => new { t.ProjectLocation_Id, t.Project_Id })
+                .ForeignKey("dbo.ProjectLocations", t => t.ProjectLocation_Id, cascadeDelete: true)
+                .ForeignKey("dbo.Projects", t => t.Project_Id, cascadeDelete: true)
+                .Index(t => t.ProjectLocation_Id)
+                .Index(t => t.Project_Id);
+            
         }
         
         public override void Down()
         {
             DropForeignKey("dbo.Projects", "TerritoryType_Id", "dbo.TerritoryTypes");
             DropForeignKey("dbo.Projects", "ProjectObjective_Id", "dbo.ProjectObjectives");
-            DropForeignKey("dbo.Projects", "ProjectLocation_Id", "dbo.ProjectLocations");
+            DropForeignKey("dbo.ProjectLocationProjects", "Project_Id", "dbo.Projects");
+            DropForeignKey("dbo.ProjectLocationProjects", "ProjectLocation_Id", "dbo.ProjectLocations");
             DropForeignKey("dbo.Projects", "Programme_Id", "dbo.Programmes");
             DropForeignKey("dbo.Projects", "Submeasure_Id", "dbo.Submeasures");
             DropForeignKey("dbo.Submeasures", "Measure_Id", "dbo.Measures");
@@ -251,10 +263,13 @@ namespace EuroFunds.Database.Migrations
             DropForeignKey("dbo.Projects", "Beneficiary_Id", "dbo.Beneficiaries");
             DropForeignKey("dbo.Projects", "AreaOfProjectIntervention_Id", "dbo.AreasOfProjectIntervention");
             DropForeignKey("dbo.Projects", "AreaOfEconomicActivity_Id", "dbo.AreasOfEconomicActivity");
+            DropIndex("dbo.ProjectLocationProjects", new[] { "Project_Id" });
+            DropIndex("dbo.ProjectLocationProjects", new[] { "ProjectLocation_Id" });
             DropIndex("dbo.TerritoryTypes", new[] { "Name" });
             DropIndex("dbo.TerritoryTypes", new[] { "OrderNo" });
             DropIndex("dbo.ProjectObjectives", new[] { "Name" });
             DropIndex("dbo.ProjectObjectives", new[] { "OrderNo" });
+            DropIndex("dbo.ProjectLocations", new[] { "Name" });
             DropIndex("dbo.Submeasures", new[] { "Measure_Id" });
             DropIndex("dbo.Submeasures", "IX_Submeasure");
             DropIndex("dbo.Priorities", "IX_Priority");
@@ -268,7 +283,6 @@ namespace EuroFunds.Database.Migrations
             DropIndex("dbo.AreasOfProjectIntervention", new[] { "OrderNo" });
             DropIndex("dbo.Projects", new[] { "TerritoryType_Id" });
             DropIndex("dbo.Projects", new[] { "ProjectObjective_Id" });
-            DropIndex("dbo.Projects", new[] { "ProjectLocation_Id" });
             DropIndex("dbo.Projects", new[] { "Programme_Id" });
             DropIndex("dbo.Projects", new[] { "Submeasure_Id" });
             DropIndex("dbo.Projects", new[] { "Measure_Id" });
@@ -281,6 +295,7 @@ namespace EuroFunds.Database.Migrations
             DropIndex("dbo.Projects", new[] { "AreaOfEconomicActivity_Id" });
             DropIndex("dbo.AreasOfEconomicActivity", new[] { "Name" });
             DropIndex("dbo.AreasOfEconomicActivity", new[] { "OrderNo" });
+            DropTable("dbo.ProjectLocationProjects");
             DropTable("dbo.Resources");
             DropTable("dbo.TerritoryTypes");
             DropTable("dbo.ProjectObjectives");

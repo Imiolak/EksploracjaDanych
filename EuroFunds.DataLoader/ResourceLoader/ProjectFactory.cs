@@ -26,7 +26,7 @@ namespace EuroFunds.DataLoader.ResourceLoader
                 EUCofinancingRate = PropertyParser.ParseFloat(row[PropertyIndexes.EUCofinancingRate]) / 100,
 
                 FormOfFinance = PropertyParser.ParseFormOfFinance(row[PropertyIndexes.FormOfFinance]),
-                //ProjectLocation = 
+                ProjectLocations = PropertyParser.ParseProjectLocation(row[PropertyIndexes.ProjectLocation]),
                 TerritoryType = PropertyParser.ParseTerritoryType(row[PropertyIndexes.TerritoryType]),
                 ProjectStartDate = PropertyParser.ParseDateTime(row[PropertyIndexes.ProjectStartDate]),
                 ProjectEndDate = PropertyParser.ParseDateTime(row[PropertyIndexes.ProjectEndDate]),
