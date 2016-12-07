@@ -1,5 +1,6 @@
 ﻿using EuroFunds.Database.DAO;
 using EuroFunds.Database.Models;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,7 +8,7 @@ namespace EuroFunds.Statistics
 {
     public class StatisticsGenerator
     {
-        public IDictionary<string, decimal> SumOfTotalProjectValuesForEachLocation()
+        public string SumOfTotalProjectValuesForEachLocation()
         {
             var map = new Dictionary<string, decimal>();
 
@@ -32,10 +33,11 @@ namespace EuroFunds.Statistics
                 }
             }
 
-            return map;
+            string json = JsonConvert.SerializeObject(map, Formatting.Indented);
+            return json;
         }
 
-        public IDictionary<string, int> NumberOfProjectsForEachLocation()
+        public string NumberOfProjectsForEachLocation()
         {
             using (var context = new EuroFundsContext())
             {
@@ -53,16 +55,20 @@ namespace EuroFunds.Statistics
                     map[key] += wholeCountryProjects;
                 }
 
-                return map;
+               // return map;
+
+                string json = JsonConvert.SerializeObject(map, Formatting.Indented);
+                return json;
             }
         }
 
-        public IDictionary<string, decimal> AverageTotalProjectValueForEachLocation()
-        {
-            var totalValues = SumOfTotalProjectValuesForEachLocation();
-            var noProjects = NumberOfProjectsForEachLocation();
+       // public IDictionary<string, decimal> AverageTotalProjectValueForEachLocation()
+        //{
+      //      var totalValues = SumOfTotalProjectValuesForEachLocation();
+    //        var noProjects = NumberOfProjectsForEachLocation();
 
-            return totalValues.ToDictionary(kv => kv.Key, kv => kv.Value / noProjects[kv.Key]);
-        }
+  //          return totalValues.ToDictionary(kv => kv.Key, kv => kv.Value / noProjects[kv.Key]);
+//        }
+
     }
 }
