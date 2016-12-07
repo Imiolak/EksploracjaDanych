@@ -1,15 +1,17 @@
 ﻿using EuroFunds.Database.DAO;
 using EuroFunds.Database.Models;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace EuroFunds.Statistics
 {
     public class StatisticsGenerator
     {
-        public string SumOfTotalProjectValuesForEachLocation()
+        private const string Path = @"..\..\..\EuroFunds.Viewer\Views\Home\";
+
+        public IDictionary<string, decimal> SumOfTotalProjectValuesForEachLocation()
         {
             var map = new Dictionary<string, decimal>();
 
@@ -34,22 +36,24 @@ namespace EuroFunds.Statistics
                 }
             }
 
-            string json = JsonConvert.SerializeObject(map, Formatting.Indented);
-            System.IO.File.WriteAllText(@"c:\src\sum.txt", json);
-            Console.Write("One ");
-            return json;
+            var json = JsonConvert.SerializeObject(map, Formatting.Indented);
+            System.IO.File.WriteAllText(Path + "sum.json", json);
+
+            return map;
         }
 
-        public string NumberOfProjectsForEachLocation()
+        public IDictionary<string, int> NumberOfProjectsForEachLocation()
         {
             using (var context = new EuroFundsContext())
             {
-                var map = context.ProjectLocations
+                var projectLocations = context.ProjectLocations.ToList();
+
+                var map = projectLocations
                     .Where(pl => pl.Name != ProjectLocation.WholeCountry.Name)
                     .ToDictionary(pl => pl.Name, pl => pl.Projects.Count);
 
-                var wholeCountryProjects = context.ProjectLocations
-                    .Single(pl => pl.Name != ProjectLocation.WholeCountry.Name)
+                var wholeCountryProjects = projectLocations
+                    .Single(pl => pl.Name == ProjectLocation.WholeCountry.Name)
                     .Projects
                     .Count;
 
@@ -58,21 +62,25 @@ namespace EuroFunds.Statistics
                     map[key] += wholeCountryProjects;
                 }
 
-               // return map;
+                var json = JsonConvert.SerializeObject(map, Formatting.Indented);
+                System.IO.File.WriteAllText(Path + "num.json", json);
 
-                string json = JsonConvert.SerializeObject(map, Formatting.Indented);
-                System.IO.File.WriteAllText(@"c:\src\num.txt", json);
-                return json;
+                return map;
             }
         }
 
-       // public IDictionary<string, decimal> AverageTotalProjectValueForEachLocation()
-        //{
-      //      var totalValues = SumOfTotalProjectValuesForEachLocation();
-    //        var noProjects = NumberOfProjectsForEachLocation();
+        public IDictionary<string, decimal> AverageTotalProjectValueForEachLocation()
+        {
+            var totalValues = SumOfTotalProjectValuesForEachLocation();
+            var noProjects = NumberOfProjectsForEachLocation();
 
-  //          return totalValues.ToDictionary(kv => kv.Key, kv => kv.Value / noProjects[kv.Key]);
-//        }
+            var map = totalValues.ToDictionary(kv => kv.Key, kv => decimal.Round(kv.Value / noProjects[kv.Key], 2));
+
+            var json = JsonConvert.SerializeObject(map, Formatting.Indented);
+            System.IO.File.WriteAllText(Path + "avg.json", json);
+
+            return map;
+        }
 
     }
 }
