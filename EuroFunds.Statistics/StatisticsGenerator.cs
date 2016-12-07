@@ -1,6 +1,7 @@
 ﻿using EuroFunds.Database.DAO;
 using EuroFunds.Database.Models;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -34,6 +35,8 @@ namespace EuroFunds.Statistics
             }
 
             string json = JsonConvert.SerializeObject(map, Formatting.Indented);
+            System.IO.File.WriteAllText(@"c:\src\sum.txt", json);
+            Console.Write("One ");
             return json;
         }
 
@@ -58,6 +61,7 @@ namespace EuroFunds.Statistics
                // return map;
 
                 string json = JsonConvert.SerializeObject(map, Formatting.Indented);
+                System.IO.File.WriteAllText(@"c:\src\num.txt", json);
                 return json;
             }
         }
