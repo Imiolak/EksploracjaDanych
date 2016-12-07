@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EuroFunds.Runner", "EuroFun
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EuroFunds.Statistics", "EuroFunds.Statistics\EuroFunds.Statistics.csproj", "{26E91663-3628-4AFC-9B91-907246F3EA9A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EuroFunds.Viewer", "EuroFunds.Viewer\EuroFunds.Viewer.csproj", "{46F7F91E-9BA6-4D38-B984-B3A32337F6DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{26E91663-3628-4AFC-9B91-907246F3EA9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26E91663-3628-4AFC-9B91-907246F3EA9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26E91663-3628-4AFC-9B91-907246F3EA9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46F7F91E-9BA6-4D38-B984-B3A32337F6DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46F7F91E-9BA6-4D38-B984-B3A32337F6DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46F7F91E-9BA6-4D38-B984-B3A32337F6DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46F7F91E-9BA6-4D38-B984-B3A32337F6DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
