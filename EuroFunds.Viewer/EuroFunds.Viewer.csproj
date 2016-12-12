@@ -15,7 +15,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>EuroFunds.Viewer</RootNamespace>
     <AssemblyName>EuroFunds.Viewer</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -90,22 +90,21 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Web.Razor">
@@ -150,6 +149,7 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\StatsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -157,7 +157,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -178,6 +180,25 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\Stats\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EuroFunds.Database\EuroFunds.Database.csproj">
+      <Project>{a82a98a2-9de5-4676-b47f-99923abdf1e2}</Project>
+      <Name>EuroFunds.Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EuroFunds.DataLoader\EuroFunds.DataLoader.csproj">
+      <Project>{99c085de-b0aa-4d89-9110-049a151a514c}</Project>
+      <Name>EuroFunds.DataLoader</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EuroFunds.Runner\EuroFunds.Runner.csproj">
+      <Project>{c366b8a6-a95f-4b99-91e9-44c7dfbe87fe}</Project>
+      <Name>EuroFunds.Runner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EuroFunds.Statistics\EuroFunds.Statistics.csproj">
+      <Project>{26e91663-3628-4afc-9b91-907246f3ea9a}</Project>
+      <Name>EuroFunds.Statistics</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

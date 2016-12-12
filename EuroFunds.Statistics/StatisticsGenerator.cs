@@ -9,9 +9,7 @@ namespace EuroFunds.Statistics
 {
     public class StatisticsGenerator
     {
-        private const string Path = @"..\..\..\EuroFunds.Viewer\Views\Home\";
-
-        public IDictionary<string, decimal> SumOfTotalProjectValuesForEachLocation()
+        public string SumOfTotalProjectValuesForEachLocation()
         {
             var map = new Dictionary<string, decimal>();
 
@@ -37,12 +35,11 @@ namespace EuroFunds.Statistics
             }
 
             var json = JsonConvert.SerializeObject(map, Formatting.Indented);
-            System.IO.File.WriteAllText(Path + "sum.json", json);
-
-            return map;
+  
+            return json;
         }
 
-        public IDictionary<string, int> NumberOfProjectsForEachLocation()
+        public string NumberOfProjectsForEachLocation()
         {
             using (var context = new EuroFundsContext())
             {
@@ -63,13 +60,12 @@ namespace EuroFunds.Statistics
                 }
 
                 var json = JsonConvert.SerializeObject(map, Formatting.Indented);
-                System.IO.File.WriteAllText(Path + "num.json", json);
 
-                return map;
+                return json;
             }
         }
 
-        public IDictionary<string, decimal> AverageTotalProjectValueForEachLocation()
+       /* public IDictionary<string, decimal> AverageTotalProjectValueForEachLocation()
         {
             var totalValues = SumOfTotalProjectValuesForEachLocation();
             var noProjects = NumberOfProjectsForEachLocation();
@@ -80,7 +76,7 @@ namespace EuroFunds.Statistics
             System.IO.File.WriteAllText(Path + "avg.json", json);
 
             return map;
-        }
+        }*/
 
     }
 }

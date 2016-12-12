@@ -10,9 +10,9 @@ namespace EuroFunds.Runner
             //loader.Load();
 
             var statisticsGenerator = new StatisticsGenerator();
-            //statisticsGenerator.SumOfTotalProjectValuesForEachLocation();
-            statisticsGenerator.NumberOfProjectsForEachLocation();
-            statisticsGenerator.AverageTotalProjectValueForEachLocation();
+            statisticsGenerator.SumOfTotalProjectValuesForEachLocation();
+           // statisticsGenerator.NumberOfProjectsForEachLocation();
+           // statisticsGenerator.AverageTotalProjectValueForEachLocation();
             //do sth with stats here
         }
     }
