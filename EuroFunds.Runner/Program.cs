@@ -6,13 +6,15 @@ namespace EuroFunds.Runner
     {
         static void Main(string[] args)
         {
-          //  var loader = new DataLoader.DataLoader();
+            //var loader = new DataLoader.DataLoader();
             //loader.Load();
 
             var statisticsGenerator = new StatisticsGenerator();
+            statisticsGenerator.GenerateAll();
             //statisticsGenerator.SumOfTotalProjectValuesForEachLocation();
-            statisticsGenerator.NumberOfProjectsForEachLocation();
-            statisticsGenerator.AverageTotalProjectValueForEachLocation();
+            //statisticsGenerator.NumberOfProjectsForEachLocation();
+            //statisticsGenerator.AverageTotalProjectValueForEachLocation();
+            //statisticsGenerator.SumOfTotalProjectValuesForEachYear();
             //do sth with stats here
         }
     }

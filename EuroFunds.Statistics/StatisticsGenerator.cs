@@ -11,6 +11,21 @@ namespace EuroFunds.Statistics
     {
         private const string Path = @"..\..\..\EuroFunds.Viewer\Views\Home\";
 
+        public void GenerateAll()
+        {
+            //SumOfTotalProjectValuesForEachLocation();
+            //NumberOfProjectsForEachLocation();
+            //AverageTotalProjectValueForEachLocation();
+            //SumOfTotalProjectValuesForEachYear();
+            //NumberOfProjectsForEachYear();
+            //AverageTotalProjectValueForEachYear();
+            //SumByYearForMazowieckie();
+            //NumByYearForMazowieckie();
+            //AvgByYearForMazowieckie();
+            SumByPriority();
+            //AvgCoFinancingByTerritoryType();
+        }
+
         public IDictionary<string, decimal> SumOfTotalProjectValuesForEachLocation()
         {
             var map = new Dictionary<string, decimal>();
@@ -35,9 +50,8 @@ namespace EuroFunds.Statistics
                     }
                 }
             }
-
-            var json = JsonConvert.SerializeObject(map, Formatting.Indented);
-            System.IO.File.WriteAllText(Path + "sum.json", json);
+            
+            JsonifyAndSaveToFile(map, "sumByLocation.json");
 
             return map;
         }
@@ -62,8 +76,7 @@ namespace EuroFunds.Statistics
                     map[key] += wholeCountryProjects;
                 }
 
-                var json = JsonConvert.SerializeObject(map, Formatting.Indented);
-                System.IO.File.WriteAllText(Path + "num.json", json);
+                JsonifyAndSaveToFile(map, "numByLocation.json");
 
                 return map;
             }
@@ -75,11 +88,181 @@ namespace EuroFunds.Statistics
             var noProjects = NumberOfProjectsForEachLocation();
 
             var map = totalValues.ToDictionary(kv => kv.Key, kv => decimal.Round(kv.Value / noProjects[kv.Key], 2));
-
-            var json = JsonConvert.SerializeObject(map, Formatting.Indented);
-            System.IO.File.WriteAllText(Path + "avg.json", json);
+            JsonifyAndSaveToFile(map, "avgByLocation.json");
 
             return map;
+        }
+
+        public IDictionary<int, decimal> SumOfTotalProjectValuesForEachYear()
+        {
+            var map = new Dictionary<int, decimal>();
+
+            using (var context = new EuroFundsContext())
+            {
+                foreach (var project in context.Projects.OrderBy(p => p.ProjectStartDate.Year))
+                {
+                    var year = project.ProjectStartDate.Year;
+
+                    if (!map.ContainsKey(year))
+                        map[year] = 0m;
+
+                    map[year] += project.TotalProjectValue;
+                }
+            }
+
+            JsonifyAndSaveToFile(map, "sumByYear.json");
+
+            return map;
+        }
+
+        public IDictionary<int, int> NumberOfProjectsForEachYear()
+        {
+            var map = new Dictionary<int, int>();
+
+            using (var context = new EuroFundsContext())
+            {
+                foreach (var project in context.Projects.OrderBy(p => p.ProjectStartDate.Year))
+                {
+                    var year = project.ProjectStartDate.Year;
+
+                    if (!map.ContainsKey(year))
+                        map[year] = 0;
+
+                    map[year]++;
+                }
+            }
+
+            JsonifyAndSaveToFile(map, "numByYear.json");
+
+            return map;
+        }
+
+        public IDictionary<int, decimal> AverageTotalProjectValueForEachYear()
+        {
+            var totalValues = SumOfTotalProjectValuesForEachYear();
+            var noProjects = NumberOfProjectsForEachYear();
+
+            var map = totalValues.ToDictionary(kv => kv.Key, kv => decimal.Round(kv.Value/noProjects[kv.Key], 2));
+            JsonifyAndSaveToFile(map, "avgByYear.json");
+
+            return map;
+        }
+
+        public IDictionary<int, decimal> SumByYearForMazowieckie()
+        {
+            const string mazowieckie = "MAZOWIECKIE";
+
+            using (var context = new EuroFundsContext())
+            {
+                var projects = context.ProjectLocations
+                    .Where(pl => pl.Name == mazowieckie
+                                 || pl.Name == ProjectLocation.WholeCountry.Name)
+                    .SelectMany(pl => pl.Projects);
+
+                var map = new Dictionary<int, decimal>();
+
+                foreach (var project in projects.OrderBy(p => p.ProjectStartDate.Year))
+                {
+                    var year = project.ProjectStartDate.Year;
+
+                    if (!map.ContainsKey(year))
+                        map[year] = 0m;
+
+                    map[year] += project.TotalProjectValue;
+                }
+
+                JsonifyAndSaveToFile(map, "sumByYearForMazowieckie.json");
+
+                return map;
+            }
+        }
+
+        public IDictionary<int, int> NumByYearForMazowieckie()
+        {
+            const string mazowieckie = "MAZOWIECKIE";
+
+            using (var context = new EuroFundsContext())
+            {
+                var projects = context.ProjectLocations
+                    .Where(pl => pl.Name == mazowieckie
+                                 || pl.Name == ProjectLocation.WholeCountry.Name)
+                    .SelectMany(pl => pl.Projects);
+
+                var map = new Dictionary<int, int>();
+
+                foreach (var project in projects.OrderBy(p => p.ProjectStartDate.Year))
+                {
+                    var year = project.ProjectStartDate.Year;
+
+                    if (!map.ContainsKey(year))
+                        map[year] = 0;
+
+                    map[year]++;
+                }
+
+                JsonifyAndSaveToFile(map, "numByYearForMazowieckie.json");
+
+                return map;
+            }
+        }
+
+        public IDictionary<int, decimal> AvgByYearForMazowieckie()
+        {
+            var totalValues = SumByYearForMazowieckie();
+            var noProjects = NumByYearForMazowieckie();
+
+            var map = totalValues.ToDictionary(kv => kv.Key, kv => decimal.Round(kv.Value / noProjects[kv.Key], 2));
+            JsonifyAndSaveToFile(map, "avgByYearForMazowieckie.json");
+
+            return map;
+        }
+
+        public IDictionary<string, decimal> SumByPriority()
+        {
+            var map = new Dictionary<string, decimal>();
+
+            using (var context = new EuroFundsContext())
+            {
+                var priorities = context.Priorities.ToList();
+
+                foreach (var priority in priorities)
+                {
+                    if (!map.ContainsKey(priority.Name))
+                        map[priority.Name] = 0m;
+
+                    foreach (var project in priority.Measures.SelectMany(measure => measure.Projects))
+                    {
+                        map[priority.Name] += project.TotalProjectValue;
+                    }
+                }
+            }
+
+            JsonifyAndSaveToFile(map.OrderByDescending(kv => kv.Value), "sumByPriority.json");
+
+            return map;
+        }
+
+        public IDictionary<string, float> AvgCoFinancingByTerritoryType()
+        {
+            var map = new Dictionary<string, float>();
+
+            using (var context = new EuroFundsContext())
+            {
+                foreach (var territoryType in context.TerritoryTypes.ToList())
+                {
+                    map[territoryType.Name] = territoryType.Projects.Average(p => p.EUCofinancingRate);
+                }
+            }
+
+            JsonifyAndSaveToFile(map, "avgCoFinancingByTerrType.json");
+
+            return map;
+        }
+   
+        private static void JsonifyAndSaveToFile(object value, string filename)
+        {
+            var json = JsonConvert.SerializeObject(value, Formatting.Indented);
+            System.IO.File.WriteAllText(Path + filename, json);
         }
 
     }
