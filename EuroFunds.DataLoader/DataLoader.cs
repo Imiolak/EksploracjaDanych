@@ -44,6 +44,10 @@ namespace EuroFunds.DataLoader
 
                 Console.WriteLine("Loading projects done.");
             }
+            else
+            {
+                Console.WriteLine("No project to add..");
+            }
 
             stopwatch.Stop();
             Console.WriteLine($"Took {stopwatch.Elapsed}");

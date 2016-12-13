@@ -70,7 +70,7 @@
       <Name>EuroFunds.DataLoader</Name>
     </ProjectReference>
     <ProjectReference Include="..\EuroFunds.Statistics\EuroFunds.Statistics.csproj">
-      <Project>{26E91663-3628-4AFC-9B91-907246F3EA9A}</Project>
+      <Project>{5F1BE798-2416-4AFB-8DE2-2B0B3FA4721B}</Project>
       <Name>EuroFunds.Statistics</Name>
     </ProjectReference>
   </ItemGroup>

@@ -1,138 +1,224 @@
 ﻿using EuroFunds.Database.DAO;
 using EuroFunds.Database.Models;
-using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using Formatting = Newtonsoft.Json.Formatting;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace EuroFunds.Statistics
 {
-    public class StatisticsGenerator
+    public class StatisticsGenerator : IDisposable
     {
-        private const string Path = @"..\..\..\EuroFunds.Viewer\Views\Home\";
+        private const string ChartsFolder = @"..\..\..\Charts\";
+
+        private readonly EuroFundsContext _context;
+        private IList<Project> _projects;
+        private IList<int> _distinctYears;
+        private IList<string> _distinctLocations;
+
+        public StatisticsGenerator()
+        {
+            _context = new EuroFundsContext();
+        } 
+
+        public void Initialize()
+        {
+            _projects = _context.Projects.ToList();
+            _distinctYears = GetDistinctYears().ToList();
+            _distinctLocations = GetDistinctProjectLocations().ToList();
+        }
 
         public void GenerateAll()
         {
-            //SumOfTotalProjectValuesForEachLocation();
-            //NumberOfProjectsForEachLocation();
-            //AverageTotalProjectValueForEachLocation();
-            //SumOfTotalProjectValuesForEachYear();
-            //NumberOfProjectsForEachYear();
-            //AverageTotalProjectValueForEachYear();
-            //SumByYearForMazowieckie();
-            //NumByYearForMazowieckie();
-            //AvgByYearForMazowieckie();
-            SumByPriority();
-            //AvgCoFinancingByTerritoryType();
+            var stopwatch = Stopwatch.StartNew();
+            Console.WriteLine($"Generating statistics. Output folder: {new DirectoryInfo(ChartsFolder).FullName}");
+
+            SumOfTotalProjectValuesForEachLocation();
+            NumberOfProjectsForEachLocation();
+            AverageTotalProjectValueForEachLocation();
+            SumOfTotalProjectValuesForEachYear();
+            NumberOfProjectsForEachYear();
+            AverageTotalProjectValueForEachYear();
+            AverageProjectLengthByYearByRegion();
+            AverageProjectLengthByYear();
+
+            stopwatch.Stop();
+            Console.WriteLine($"Took {stopwatch.Elapsed}");
         }
 
-        public IDictionary<string, decimal> SumOfTotalProjectValuesForEachLocation()
+        public IDictionary<int, IDictionary<string, decimal>> SumOfTotalProjectValuesForEachLocation()
         {
-            var map = new Dictionary<string, decimal>();
-
-            using (var context = new EuroFundsContext())
+            var distinctYears = GetDistinctYears();
+            var distinctProjectLocations = GetDistinctProjectLocations();
+            var map = PrepareDictionary<int, string, decimal>(distinctYears, distinctProjectLocations);
+            
+            foreach (var project in _projects)
             {
-                var projectLocations = context.ProjectLocations.ToList();
+                var projectValue = project.TotalProjectValue;
+                var year = project.ProjectStartDate.Year;
+                var projectLocations = project.ProjectLocations.Select(pl => pl.Name).ToList();
 
-                foreach (var projectLocation in projectLocations.Where(pl => pl.Name != ProjectLocation.WholeCountry.Name))
+                if (projectLocations.Count == 1 && projectLocations.First() == ProjectLocation.WholeCountry.Name)
                 {
-                    map[projectLocation.Name] = projectLocation.Projects.Sum(project => project.TotalProjectValue);
-                }
-
-                foreach (var projectValue in projectLocations
-                    .Single(pl => pl.Name == ProjectLocation.WholeCountry.Name)
-                    .Projects
-                    .Select(project => project.TotalProjectValue))
-                {
-                    foreach (var key in map.Keys.ToList())
+                    foreach (var projectLocation in map[year].Keys.ToList())
                     {
-                        map[key] += projectValue;
+                        map[year][projectLocation] += projectValue;
+                    }
+                }
+                else
+                {
+                    foreach (var projectLocation in projectLocations)
+                    {
+                        map[year][projectLocation] += projectValue;
                     }
                 }
             }
             
-            JsonifyAndSaveToFile(map, "sumByLocation.json");
+            var chartBuilder = new ColumnChartBuilder<string, decimal>()
+                .Title("Sum of projects total values for each location by years")
+                .AxesTitles("Voivodeships", "Sum of projects total values (PLN)")
+                .Height(400)
+                .Width(1000)
+                .WithLegend("Years");
+
+            foreach (var yearSeries in map.OrderBy(entry => entry.Key))
+            {
+                chartBuilder.AddSeries(yearSeries.Key.ToString(), yearSeries.Value);
+            }
+
+            var chart = chartBuilder.Build();
+            chart.SaveImage(Path.Combine(ChartsFolder, "sumByYearByRegion.png"), ChartImageFormat.Png);
 
             return map;
         }
 
-        public IDictionary<string, int> NumberOfProjectsForEachLocation()
+        
+
+        public IDictionary<int, IDictionary<string, int>> NumberOfProjectsForEachLocation()
         {
-            using (var context = new EuroFundsContext())
+            var distinctYears = GetDistinctYears();
+            var distinctProjectLocations = GetDistinctProjectLocations();
+            var map = PrepareDictionary<int, string, int>(distinctYears, distinctProjectLocations);
+            
+            foreach (var project in _projects)
             {
-                var projectLocations = context.ProjectLocations.ToList();
+                var year = project.ProjectStartDate.Year;
+                var projectLocations = project.ProjectLocations.Select(pl => pl.Name).ToList();
 
-                var map = projectLocations
-                    .Where(pl => pl.Name != ProjectLocation.WholeCountry.Name)
-                    .ToDictionary(pl => pl.Name, pl => pl.Projects.Count);
-
-                var wholeCountryProjects = projectLocations
-                    .Single(pl => pl.Name == ProjectLocation.WholeCountry.Name)
-                    .Projects
-                    .Count;
-
-                foreach (var key in map.Keys.ToList())
+                if (projectLocations.Count == 1 && projectLocations.First() == ProjectLocation.WholeCountry.Name)
                 {
-                    map[key] += wholeCountryProjects;
+                    foreach (var projectLocation in map[year].Keys.ToList())
+                    {
+                        ++map[year][projectLocation];
+                    }
                 }
-
-                JsonifyAndSaveToFile(map, "numByLocation.json");
-
-                return map;
+                else
+                {
+                    foreach (var projectLocation in projectLocations)
+                    {
+                        ++map[year][projectLocation];
+                    }
+                }
             }
+
+            var chartBuilder = new ColumnChartBuilder<string, int>()
+                .Title("Number of projects for each location by years")
+                .AxesTitles("Voivodeships", "Number of projects")
+                .Height(400)
+                .Width(1000)
+                .WithLegend("Years");
+
+            foreach (var yearSeries in map.OrderBy(entry => entry.Key))
+            {
+                chartBuilder.AddSeries(yearSeries.Key.ToString(), yearSeries.Value);
+            }
+
+            var chart = chartBuilder.Build();
+            chart.SaveImage(Path.Combine(ChartsFolder, "countByYearByRegion.png"), ChartImageFormat.Png);
+
+            return map;
         }
 
-        public IDictionary<string, decimal> AverageTotalProjectValueForEachLocation()
+        public IDictionary<int, IDictionary<string, decimal>> AverageTotalProjectValueForEachLocation()
         {
             var totalValues = SumOfTotalProjectValuesForEachLocation();
             var noProjects = NumberOfProjectsForEachLocation();
+            var map = PrepareDictionary<int, string, decimal>(totalValues.Keys, totalValues.First().Value.Keys);
 
-            var map = totalValues.ToDictionary(kv => kv.Key, kv => decimal.Round(kv.Value / noProjects[kv.Key], 2));
-            JsonifyAndSaveToFile(map, "avgByLocation.json");
+            foreach (var year in totalValues.Keys)
+            {
+                foreach (var projectLocation in totalValues[year].Keys)
+                {
+                    map[year][projectLocation] = noProjects[year][projectLocation] == 0 
+                        ? 0m
+                        : decimal.Round(totalValues[year][projectLocation]/noProjects[year][projectLocation], 2);
+                }
+            }
+
+            var chartBuilder = new ColumnChartBuilder<string, decimal>()
+                .Title("Average project's total value for each location by years")
+                .AxesTitles("Voivodeships", "Average project's total value (PLN)")
+                .Height(400)
+                .Width(1000)
+                .WithLegend("Years");
+
+            foreach (var yearSeries in map.OrderBy(entry => entry.Key))
+            {
+                chartBuilder.AddSeries(yearSeries.Key.ToString(), yearSeries.Value);
+            }
+
+            var chart = chartBuilder.Build();
+            chart.SaveImage(Path.Combine(ChartsFolder, "avgValueByYearByRegion.png"), ChartImageFormat.Png);
 
             return map;
         }
 
         public IDictionary<int, decimal> SumOfTotalProjectValuesForEachYear()
         {
-            var map = new Dictionary<int, decimal>();
-
-            using (var context = new EuroFundsContext())
+            var years = GetDistinctYears();
+            var map = PrepareDictionary<int, decimal>(years);
+            
+            foreach (var project in _projects.OrderBy(p => p.ProjectStartDate.Year))
             {
-                foreach (var project in context.Projects.OrderBy(p => p.ProjectStartDate.Year))
-                {
-                    var year = project.ProjectStartDate.Year;
-
-                    if (!map.ContainsKey(year))
-                        map[year] = 0m;
-
-                    map[year] += project.TotalProjectValue;
-                }
+                var year = project.ProjectStartDate.Year;
+                map[year] += project.TotalProjectValue;
             }
 
-            JsonifyAndSaveToFile(map, "sumByYear.json");
+            var chart = new ColumnChartBuilder<int, decimal>()
+                .Title("Sum of projects total values for each year")
+                .AxesTitles("Years", "Sum of projects total values (PLN)")
+                .Height(400)
+                .Width(1000)
+                .AddSeries("", map)
+                .Build();
+
+            chart.SaveImage(Path.Combine(ChartsFolder, "sumByYear.png"), ChartImageFormat.Png);
 
             return map;
         }
 
         public IDictionary<int, int> NumberOfProjectsForEachYear()
         {
-            var map = new Dictionary<int, int>();
-
-            using (var context = new EuroFundsContext())
+            var years = GetDistinctYears();
+            var map = PrepareDictionary<int, int>(years);
+            
+            foreach (var project in _projects.OrderBy(p => p.ProjectStartDate.Year))
             {
-                foreach (var project in context.Projects.OrderBy(p => p.ProjectStartDate.Year))
-                {
-                    var year = project.ProjectStartDate.Year;
-
-                    if (!map.ContainsKey(year))
-                        map[year] = 0;
-
-                    map[year]++;
-                }
+                var year = project.ProjectStartDate.Year;
+                ++map[year];
             }
 
-            JsonifyAndSaveToFile(map, "numByYear.json");
+            var chart = new ColumnChartBuilder<int, int>()
+                .Title("Number of projects for each year")
+                .AxesTitles("Years", "Number of projects")
+                .Height(400)
+                .Width(1000)
+                .AddSeries("", map)
+                .Build();
+
+            chart.SaveImage(Path.Combine(ChartsFolder, "countByYear.png"), ChartImageFormat.Png);
 
             return map;
         }
@@ -143,127 +229,155 @@ namespace EuroFunds.Statistics
             var noProjects = NumberOfProjectsForEachYear();
 
             var map = totalValues.ToDictionary(kv => kv.Key, kv => decimal.Round(kv.Value/noProjects[kv.Key], 2));
-            JsonifyAndSaveToFile(map, "avgByYear.json");
+
+            var chart = new ColumnChartBuilder<int, decimal>()
+                .Title("Average project's total value for each year")
+                .AxesTitles("Years", "Average project's total value (PLN)")
+                .Height(400)
+                .Width(1000)
+                .AddSeries("", map)
+                .Build();
+
+            chart.SaveImage(Path.Combine(ChartsFolder, "avgByYear.png"), ChartImageFormat.Png);
 
             return map;
         }
 
-        public IDictionary<int, decimal> SumByYearForMazowieckie()
+        public IDictionary<int, IDictionary<string, double>> AverageProjectLengthByYearByRegion()
         {
-            const string mazowieckie = "MAZOWIECKIE";
+            var counts = PrepareDictionary<int, string, int>(_distinctYears, _distinctLocations);
+            var averages = PrepareDictionary<int, string, double>(_distinctYears, _distinctLocations);
 
-            using (var context = new EuroFundsContext())
+            foreach (var project in _projects)
             {
-                var projects = context.ProjectLocations
-                    .Where(pl => pl.Name == mazowieckie
-                                 || pl.Name == ProjectLocation.WholeCountry.Name)
-                    .SelectMany(pl => pl.Projects);
+                var length = project.GetProjectLength().TotalDays;
+                var year = project.ProjectStartDate.Year;
+                var projectLocations = project.ProjectLocations.Select(pl => pl.Name).ToList();
 
-                var map = new Dictionary<int, decimal>();
-
-                foreach (var project in projects.OrderBy(p => p.ProjectStartDate.Year))
+                if (projectLocations.Count == 1 && projectLocations.First() == ProjectLocation.WholeCountry.Name)
                 {
-                    var year = project.ProjectStartDate.Year;
-
-                    if (!map.ContainsKey(year))
-                        map[year] = 0m;
-
-                    map[year] += project.TotalProjectValue;
-                }
-
-                JsonifyAndSaveToFile(map, "sumByYearForMazowieckie.json");
-
-                return map;
-            }
-        }
-
-        public IDictionary<int, int> NumByYearForMazowieckie()
-        {
-            const string mazowieckie = "MAZOWIECKIE";
-
-            using (var context = new EuroFundsContext())
-            {
-                var projects = context.ProjectLocations
-                    .Where(pl => pl.Name == mazowieckie
-                                 || pl.Name == ProjectLocation.WholeCountry.Name)
-                    .SelectMany(pl => pl.Projects);
-
-                var map = new Dictionary<int, int>();
-
-                foreach (var project in projects.OrderBy(p => p.ProjectStartDate.Year))
-                {
-                    var year = project.ProjectStartDate.Year;
-
-                    if (!map.ContainsKey(year))
-                        map[year] = 0;
-
-                    map[year]++;
-                }
-
-                JsonifyAndSaveToFile(map, "numByYearForMazowieckie.json");
-
-                return map;
-            }
-        }
-
-        public IDictionary<int, decimal> AvgByYearForMazowieckie()
-        {
-            var totalValues = SumByYearForMazowieckie();
-            var noProjects = NumByYearForMazowieckie();
-
-            var map = totalValues.ToDictionary(kv => kv.Key, kv => decimal.Round(kv.Value / noProjects[kv.Key], 2));
-            JsonifyAndSaveToFile(map, "avgByYearForMazowieckie.json");
-
-            return map;
-        }
-
-        public IDictionary<string, decimal> SumByPriority()
-        {
-            var map = new Dictionary<string, decimal>();
-
-            using (var context = new EuroFundsContext())
-            {
-                var priorities = context.Priorities.ToList();
-
-                foreach (var priority in priorities)
-                {
-                    if (!map.ContainsKey(priority.Name))
-                        map[priority.Name] = 0m;
-
-                    foreach (var project in priority.Measures.SelectMany(measure => measure.Projects))
+                    foreach (var projectLocation in averages[year].Keys.ToList())
                     {
-                        map[priority.Name] += project.TotalProjectValue;
+                        averages[year][projectLocation] = (averages[year][projectLocation] * counts[year][projectLocation] + length) / (counts[year][projectLocation] + 1);
+                        ++counts[year][projectLocation];
+                    }
+                }
+                else
+                {
+                    foreach (var projectLocation in projectLocations)
+                    {
+                        averages[year][projectLocation] = (averages[year][projectLocation] * counts[year][projectLocation] + length) / (counts[year][projectLocation] + 1);
+                        ++counts[year][projectLocation];
                     }
                 }
             }
 
-            JsonifyAndSaveToFile(map.OrderByDescending(kv => kv.Value), "sumByPriority.json");
+            var chartBuilder = new ColumnChartBuilder<string, double>()
+                .Title("Average project's length in days for each location by year")
+                .AxesTitles("Years", "Average project's length (days)")
+                .Height(400)
+                .Width(1000);
+
+            foreach (var yearSeries in averages.OrderBy(entry => entry.Key))
+            {
+                chartBuilder.AddSeries(yearSeries.Key.ToString(), yearSeries.Value);
+            }
+
+            var chart = chartBuilder.Build();
+
+            chart.SaveImage(Path.Combine(ChartsFolder, "agvLengthByYearByLocation.png"), ChartImageFormat.Png);
+
+            return averages;
+        }
+
+        public IDictionary<int, double> AverageProjectLengthByYear()
+        {
+            var counts = PrepareDictionary<int, int>(_distinctYears);
+            var averages = PrepareDictionary<int, double>(_distinctYears);
+
+            foreach (var project in _projects)
+            {
+                var year = project.ProjectStartDate.Year;
+
+                averages[year] = (averages[year] * counts[year] + project.GetProjectLength().TotalDays) / (counts[year] + 1);
+                ++counts[year];
+            }
+
+            var chart = new ColumnChartBuilder<int, double>()
+                .Title("Average project's length in days for each year")
+                .AxesTitles("Years", "Average project's length (days)")
+                .Height(400)
+                .Width(1000)
+                .AddSeries("", averages)
+                .Build();
+
+            chart.SaveImage(Path.Combine(ChartsFolder, "agvLengthByYear.png"), ChartImageFormat.Png);
+            
+            return averages;
+        }
+
+        #region Helpers
+
+        private IEnumerable<int> GetDistinctYears()
+        {
+            return _context.Projects
+                .Select(project => project.ProjectStartDate.Year)
+                .Distinct()
+                .OrderBy(year => year)
+                .ToList();
+        }
+
+        private IEnumerable<string> GetDistinctProjectLocations(bool excludeWholeCountry = true)
+        {
+            var distinctProjectLocations = _context.ProjectLocations
+                .Select(pl => pl.Name)
+                .Distinct()
+                .OrderBy(pl => pl)
+                .ToList();
+
+            return excludeWholeCountry
+                ? distinctProjectLocations.Where(pl => pl != ProjectLocation.WholeCountry.Name)
+                : distinctProjectLocations;
+        }
+
+        private static IDictionary<T1, T2> PrepareDictionary<T1, T2>(IEnumerable<T1> t1Values)
+        {
+            var map = new Dictionary<T1, T2>();
+
+            foreach (var t1Value in t1Values)
+            {
+                map[t1Value] = default(T2);
+            }
 
             return map;
         }
 
-        public IDictionary<string, float> AvgCoFinancingByTerritoryType()
+        private static IDictionary<T1, IDictionary<T2, T3>> PrepareDictionary<T1, T2, T3>(IEnumerable<T1> t1Values, IEnumerable<T2> t2Values)
         {
-            var map = new Dictionary<string, float>();
+            var map = new Dictionary<T1, IDictionary<T2, T3>>();
 
-            using (var context = new EuroFundsContext())
+            foreach (var t1Value in t1Values)
             {
-                foreach (var territoryType in context.TerritoryTypes.ToList())
+                map[t1Value] = new Dictionary<T2, T3>();
+
+                foreach (var t2Value in t2Values)
                 {
-                    map[territoryType.Name] = territoryType.Projects.Average(p => p.EUCofinancingRate);
+                    map[t1Value][t2Value] = default(T3);
                 }
             }
 
-            JsonifyAndSaveToFile(map, "avgCoFinancingByTerrType.json");
-
             return map;
         }
-   
-        private static void JsonifyAndSaveToFile(object value, string filename)
+
+        #endregion
+
+        #region IDisposable
+
+        public void Dispose()
         {
-            var json = JsonConvert.SerializeObject(value, Formatting.Indented);
-            System.IO.File.WriteAllText(Path + filename, json);
+            _context.Dispose();
         }
 
+        #endregion
     }
 }

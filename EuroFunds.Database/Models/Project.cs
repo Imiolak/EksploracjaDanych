@@ -39,5 +39,10 @@ namespace EuroFunds.Database.Models
 
         [NotMapped]
         public Priority Priority { get; set; }
+
+        public TimeSpan GetProjectLength()
+        {
+            return ProjectEndDate - ProjectStartDate;
+        }
     }
 }
