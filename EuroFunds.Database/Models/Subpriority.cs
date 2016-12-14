@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace EuroFunds.Database.Models
 {
     [Table("Subpriorities")]
-    class Subpriority
+    public class Subpriority
     {
         public int Id { get; set; }
 
