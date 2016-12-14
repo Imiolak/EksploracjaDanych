@@ -59,6 +59,42 @@ namespace EuroFunds.DataLoader.ResourceLoader.PropertyUtils
             };
         }
 
+        public static Subpriority ParseSubpriority(string value)
+        {
+            //var orderNo = value.Split(' ').First();
+            var name = "Inne";
+            if (value.Contains("gospodar") || value.Contains("Gospodar"))
+            {
+                name = "Gospodarka";
+            }
+            else if (value.Contains("Edukac") || value.Contains("edukac"))
+            {
+                name = "Edukacja";
+            }
+            else if (value.Contains("Infrastruktura") || value.Contains("infrastruktura"))
+            {
+                name = "Infrastruktura";
+            }
+            else if (value.Contains("Społecz") || value.Contains("społecz"))
+            {
+                name = "Społeczeństwo i sprawy społeczne";
+            }
+            else if (value.Contains("Prac") || value.Contains("prac"))
+            {
+                name = "Praca i rynek pracy";
+            }
+            else if (value.Contains("Energ") || value.Contains("energ"))
+            {
+                name = "Energia";
+            }
+            return new Subpriority
+            {
+                Name = name
+            };
+
+        }
+
+
         public static Measure ParseMeasure(string value)
         {
             var orderNo = value.Split(' ').First();
