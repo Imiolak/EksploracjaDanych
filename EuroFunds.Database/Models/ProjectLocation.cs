@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using static System.Char;
 
 namespace EuroFunds.Database.Models
 {
@@ -20,5 +22,10 @@ namespace EuroFunds.Database.Models
         public string Name { get; set; }
 
         public virtual ICollection<Project> Projects { get; set; } = new List<Project>();
+
+        public static bool IsInPoland(string value)
+        {
+            return value.All(t => !IsLetter(t) || IsUpper(t));
+        }
     }
 }

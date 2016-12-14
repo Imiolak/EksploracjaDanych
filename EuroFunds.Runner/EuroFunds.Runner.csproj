@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="ProjectFileOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -65,6 +66,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EuroFunds.Database\EuroFunds.Database.csproj">
+      <Project>{a82a98a2-9de5-4676-b47f-99923abdf1e2}</Project>
+      <Name>EuroFunds.Database</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EuroFunds.DataLoader\EuroFunds.DataLoader.csproj">
       <Project>{99C085DE-B0AA-4D89-9110-049A151A514C}</Project>
       <Name>EuroFunds.DataLoader</Name>
