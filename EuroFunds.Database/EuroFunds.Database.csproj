@@ -59,6 +59,7 @@
     <Compile Include="Models\AreaOfEconomicActivity.cs" />
     <Compile Include="Models\AreaOfProjectIntervention.cs" />
     <Compile Include="Models\Beneficiary.cs" />
+    <Compile Include="Models\Subpriority.cs" />
     <Compile Include="Models\ESFSecondaryTheme.cs" />
     <Compile Include="Models\FormOfFinance.cs" />
     <Compile Include="Models\Fund.cs" />

@@ -160,7 +160,18 @@ namespace EuroFunds.Database.Migrations
                     })
                 .PrimaryKey(t => t.Id)
                 .Index(t => new { t.OrderNo, t.Name }, unique: true, name: "IX_Priority");
-            
+
+            CreateTable(
+                 "dbo.Subpriorities",
+                 c => new
+                {
+                    Id = c.Int(nullable: false, identity: true),
+                    Name = c.String(maxLength: 450),
+                })
+                .PrimaryKey(t => t.Id)
+                .Index(t => new {t.Name }, unique: true, name: "IX_Subpriority");
+
+
             CreateTable(
                 "dbo.Submeasures",
                 c => new

@@ -20,6 +20,8 @@ namespace EuroFunds.Database.Models
 
         public virtual ICollection<Measure> Measures { get; set; } = new List<Measure>();
 
+        public virtual ICollection<Subpriority> Subpriorities { get; set; } = new List<Subpriority>();
+
         #region Equality Members
         protected bool Equals(Priority other)
         {
