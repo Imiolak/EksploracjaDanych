@@ -68,8 +68,8 @@
 <entry key="acceptShortLines" type="xboolean" value="false"/>
 <entry key="uniquifyRowID" type="xboolean" value="false"/>
 <entry key="MaxNumOfRows" type="xlong" value="-1"/>
-<entry key="ColNumDetermLine" type="xint" value="-1"/>
-<entry key="CharsetName" type="xstring" isnull="true" value=""/>
+<entry key="ColNumDetermLine" type="xint" value="2"/>
+<entry key="CharsetName" type="xstring" value="UTF-8"/>
 <entry key="delimsAtEOLuserVal" type="xboolean" value="false"/>
 <entry key="numOfColumns" type="xint" value="5"/>
 <config key="ColumnProperties">
@@ -127,7 +127,7 @@
 <entry key="FormatParameter" type="xstring" isnull="true" value=""/>
 <entry key="ReadPossValsFromFile" type="xboolean" value="false"/>
 <entry key="SkipThisColumn" type="xboolean" value="false"/>
-<entry key="ColumnName" type="xstring" value="Terriroty Type"/>
+<entry key="ColumnName" type="xstring" value="Project Location"/>
 <config key="ColumnClass">
 <entry key="cell_class" type="xstring" value="org.knime.core.data.def.StringCell"/>
 <entry key="is_null" type="xboolean" value="false"/>
@@ -136,7 +136,7 @@
 </config>
 </config>
 <entry key="customDescription" type="xstring" isnull="true" value=""/>
-<entry key="state" type="xstring" value="EXECUTED"/>
+<entry key="state" type="xstring" value="CONFIGURED"/>
 <entry key="factory" type="xstring" value="org.knime.base.node.io.filereader.FileReaderNodeFactory"/>
 <entry key="node-name" type="xstring" value="File Reader"/>
 <entry key="node-bundle-name" type="xstring" value="KNIME Base Nodes"/>
@@ -149,19 +149,16 @@
 <entry key="node-feature-version" type="xstring" value="3.3.1.v201612062044"/>
 <config key="factory_settings"/>
 <entry key="name" type="xstring" value="File Reader"/>
-<entry key="hasContent" type="xboolean" value="true"/>
+<entry key="hasContent" type="xboolean" value="false"/>
 <entry key="isInactive" type="xboolean" value="false"/>
 <config key="ports">
 <config key="port_1">
 <entry key="index" type="xint" value="1"/>
-<entry key="port_spec_class" type="xstring" value="org.knime.core.data.DataTableSpec"/>
-<entry key="port_object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
-<entry key="port_object_summary" type="xstring" value="Rows: 8681, Cols: 5"/>
-<entry key="port_dir_location" type="xstring" value="port_1"/>
+<entry key="port_dir_location" type="xstring" isnull="true" value=""/>
 </config>
 </config>
 <config key="filestores">
 <entry key="file_store_location" type="xstring" isnull="true" value=""/>
-<entry key="file_store_id" type="xstring" value="24d492fa-6f07-422e-b6b6-324f91d7e65e"/>
+<entry key="file_store_id" type="xstring" isnull="true" value=""/>
 </config>
 </config>
