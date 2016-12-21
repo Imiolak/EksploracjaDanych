@@ -1,4 +1,5 @@
 ﻿using EuroFunds.Database.DAO;
+using EuroFunds.Database.Models;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -25,9 +26,26 @@ namespace EuroFunds.Runner
                         sb.Append($", {project.ProjectStartDate.Year}");
                         sb.Append($", {project.GetProjectLength().TotalDays}");
                         sb.Append($", {project.AreaOfEconomicActivity.OrderNo}");
-                        sb.Append($", {project.TerritoryType.OrderNo}");
+                        sb.Append(", ");
 
-                        file.WriteLine(sb.ToString());
+                        foreach (var projectLocation in project.ProjectLocations)
+                        {
+                            if (projectLocation.Name == ProjectLocation.WholeCountry.Name)
+                            {
+                                foreach (
+                                    var location in
+                                        context.ProjectLocations.ToList().Where(pl => ProjectLocation.IsInPoland(pl.Name)))
+                                {
+                                    sb.Append($"{location.Name};");
+                                }
+                            }
+                            else
+                            {
+                                sb.Append($"{projectLocation.Name};");
+                            }
+                        }
+
+                        file.WriteLine(sb.ToString().TrimEnd(';'));
                     }
                 }
 

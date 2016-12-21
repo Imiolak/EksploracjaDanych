@@ -16,7 +16,7 @@ namespace EuroFunds.Runner
             //}
 
             ProjectFileOutput.WriteAllProjectsToFile();
-            
+
             Console.WriteLine(@"Finished. Waiting for keypress..");
             Console.ReadKey();
         }
