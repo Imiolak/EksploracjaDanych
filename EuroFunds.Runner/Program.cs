@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EuroFunds.Statistics;
+using System;
 
 namespace EuroFunds.Runner
 {
@@ -6,14 +7,14 @@ namespace EuroFunds.Runner
     {
         static void Main(string[] args)
         {
-            //var loader = new DataLoader.DataLoader();
-            //loader.Load();
+            var loader = new DataLoader.DataLoader();
+            loader.Load();
 
-            //using (var statisticsGenerator = new StatisticsGenerator())
-            //{
-            //    statisticsGenerator.Initialize();
-            //    statisticsGenerator.GenerateAll();
-            //}
+            using (var statisticsGenerator = new StatisticsGenerator())
+            {
+                statisticsGenerator.Initialize();
+                statisticsGenerator.GenerateAll();
+            }
 
             ProjectFileOutput.WriteAllProjectsToFile();
 

@@ -18,6 +18,7 @@ namespace EuroFunds.Statistics
         private IList<int> _distinctYears;
         private IList<string> _distinctLocations;
         private IList<string> _distinctAreasOfEconomicActivities;
+        private IDictionary<int, IDictionary<string, IList<Project>>> _projectsPerYearPerLocation;
 
         public StatisticsGenerator()
         {
@@ -30,8 +31,9 @@ namespace EuroFunds.Statistics
             _distinctYears = GetDistinctYears();
             _distinctLocations = GetDistinctProjectLocations();
             _distinctAreasOfEconomicActivities = GetDistinctAOEA();
+            _projectsPerYearPerLocation = SortProjectsByYearAndLocation();
         }
-
+        
         public void GenerateAll()
         {
             var stopwatch = Stopwatch.StartNew();
@@ -161,7 +163,7 @@ namespace EuroFunds.Statistics
                         : decimal.Round(totalValues[year][projectLocation]/noProjects[year][projectLocation], 2);
                 }
             }
-
+            
             var chartBuilder = new ColumnChartBuilder<string, decimal>()
                 .Title("Average project's total value for each location by years")
                 .AxesTitles("Voivodeships", "Average project's total value (PLN)")
@@ -171,6 +173,7 @@ namespace EuroFunds.Statistics
 
             foreach (var yearSeries in map.OrderBy(entry => entry.Key))
             {
+
                 chartBuilder.AddSeries(yearSeries.Key.ToString(), yearSeries.Value);
             }
 
@@ -281,7 +284,8 @@ namespace EuroFunds.Statistics
                 .Title("Average project's length in days for each location by year")
                 .AxesTitles("Years", "Average project's length (days)")
                 .Height(400)
-                .Width(1000);
+                .Width(1000)
+                .WithLegend("Years");
 
             foreach (var yearSeries in averages.OrderBy(entry => entry.Key))
             {
@@ -420,6 +424,19 @@ namespace EuroFunds.Statistics
 
         #region Helpers
 
+        private double StdDev(IEnumerable<decimal> values)
+        {
+            var valueList = values as IList<decimal> ?? values.ToList();
+
+            if (valueList.Count <= 1)
+                return 0d;
+
+            var avg = valueList.Average();
+            var sumOfSquareDiffs = valueList.Sum(v => Math.Pow(Convert.ToDouble(avg - v), 2));
+
+            return Math.Sqrt(sumOfSquareDiffs/ valueList.Count);
+        }
+
         private IList<int> GetDistinctYears()
         {
             return _context.Projects
@@ -448,6 +465,41 @@ namespace EuroFunds.Statistics
                 .Select(aoea => aoea.Name)
                 .Distinct()
                 .ToList();
+        }
+
+        private IDictionary<int, IDictionary<string, IList<Project>>> SortProjectsByYearAndLocation()
+        {
+            var map = new Dictionary<int, IDictionary<string, IList<Project>>>();
+
+            foreach (var year in _distinctYears)
+            {
+                map[year] = new Dictionary<string, IList<Project>>();
+
+                foreach (var location in _distinctLocations)
+                {
+                    map[year][location] = new List<Project>();
+                }
+            }
+
+            foreach (var project in _projects)
+            {
+                foreach (var projectLocation in project.ProjectLocations.Select(pl => pl.Name))
+                {
+                    if (projectLocation == ProjectLocation.WholeCountry.Name)
+                    {
+                        foreach (var location in _distinctLocations.Where(ProjectLocation.IsInPoland))
+                        {
+                            map[project.ProjectStartDate.Year][location].Add(project);
+                        }
+                    }
+                    else
+                    {
+                        map[project.ProjectStartDate.Year][projectLocation].Add(project);
+                    }
+                }
+            }
+
+            return map;
         }
 
         private static IDictionary<T1, T2> PrepareDictionary<T1, T2>(IEnumerable<T1> t1Values)

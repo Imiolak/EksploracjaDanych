@@ -36,25 +36,25 @@
 <entry key="type" type="xstring" value="variable"/>
 <entry key="name" type="xstring" value="Accuracy"/>
 <entry key="class" type="xstring" value="DOUBLE"/>
-<entry key="value" type="xdouble" value="0.4726540011514105"/>
+<entry key="value" type="xdouble" value="0.05368942731277533"/>
 </config>
 <config key="Variable_6">
 <entry key="type" type="xstring" value="variable"/>
 <entry key="name" type="xstring" value="Error"/>
 <entry key="class" type="xstring" value="DOUBLE"/>
-<entry key="value" type="xdouble" value="0.5273459988485896"/>
+<entry key="value" type="xdouble" value="0.9463105726872246"/>
 </config>
 <config key="Variable_7">
 <entry key="type" type="xstring" value="variable"/>
 <entry key="name" type="xstring" value="#Correct"/>
 <entry key="class" type="xstring" value="INTEGER"/>
-<entry key="value" type="xint" value="821"/>
+<entry key="value" type="xint" value="195"/>
 </config>
 <config key="Variable_8">
 <entry key="type" type="xstring" value="variable"/>
 <entry key="name" type="xstring" value="#False"/>
 <entry key="class" type="xstring" value="INTEGER"/>
-<entry key="value" type="xint" value="916"/>
+<entry key="value" type="xint" value="3437"/>
 </config>
 <config key="Variable_9">
 <entry key="type" type="xstring" value="variable"/>
@@ -67,15 +67,15 @@
 <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
 </config>
 <config key="model">
-<entry key="first" type="xstring" value="Terriroty Type"/>
-<entry key="second" type="xstring" value="Prediction (Terriroty Type)"/>
+<entry key="first" type="xstring" value="Project Location"/>
+<entry key="second" type="xstring" value="Prediction (Project Location)"/>
 <entry key="flowVarPrefix" type="xstring" isnull="true" value=""/>
 <entry key="sortingReversed" type="xboolean" value="false"/>
 <entry key="sortingStrategy" type="xint" value="0"/>
 <entry key="ignore.missing.values" type="xboolean" value="true"/>
 </config>
 <entry key="customDescription" type="xstring" isnull="true" value=""/>
-<entry key="state" type="xstring" value="IDLE"/>
+<entry key="state" type="xstring" value="EXECUTED"/>
 <entry key="factory" type="xstring" value="org.knime.base.node.mine.scorer.accuracy.AccuracyScorerNodeFactory"/>
 <entry key="node-name" type="xstring" value="Scorer"/>
 <entry key="node-bundle-name" type="xstring" value="KNIME Base Nodes"/>
@@ -88,20 +88,26 @@
 <entry key="node-feature-version" type="xstring" value="3.3.1.v201612062044"/>
 <config key="factory_settings"/>
 <entry key="name" type="xstring" value="Scorer"/>
-<entry key="hasContent" type="xboolean" value="false"/>
+<entry key="hasContent" type="xboolean" value="true"/>
 <entry key="isInactive" type="xboolean" value="false"/>
 <config key="ports">
 <config key="port_1">
 <entry key="index" type="xint" value="1"/>
-<entry key="port_dir_location" type="xstring" isnull="true" value=""/>
+<entry key="port_spec_class" type="xstring" value="org.knime.core.data.DataTableSpec"/>
+<entry key="port_object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+<entry key="port_object_summary" type="xstring" value="Rows: 25, Cols: 25"/>
+<entry key="port_dir_location" type="xstring" value="port_1"/>
 </config>
 <config key="port_2">
 <entry key="index" type="xint" value="2"/>
-<entry key="port_dir_location" type="xstring" isnull="true" value=""/>
+<entry key="port_spec_class" type="xstring" value="org.knime.core.data.DataTableSpec"/>
+<entry key="port_object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+<entry key="port_object_summary" type="xstring" value="Rows: 26, Cols: 11"/>
+<entry key="port_dir_location" type="xstring" value="port_2"/>
 </config>
 </config>
 <config key="filestores">
 <entry key="file_store_location" type="xstring" isnull="true" value=""/>
-<entry key="file_store_id" type="xstring" isnull="true" value=""/>
+<entry key="file_store_id" type="xstring" value="d7edd17e-8b20-491d-a839-523fe952abb3"/>
 </config>
 </config>

@@ -3,63 +3,39 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace EuroFunds.Statistics
 {
-    public class ColumnChartBuilder<TKey, TValue>
+    public class ColumnChartBuilder<TKey, TValue> : ChartBuilderBase
     {
-        private readonly Chart _chart;
-
-        public ColumnChartBuilder()
+        public new ColumnChartBuilder<TKey, TValue> Title(string title)
         {
-            _chart = new Chart();
-            _chart.ChartAreas.Add(new ChartArea());
-
-            _chart.ChartAreas[0].AxisX.IsLabelAutoFit = true;
-            _chart.ChartAreas[0].AxisX.LabelAutoFitStyle = LabelAutoFitStyles.LabelsAngleStep90;
-            _chart.ChartAreas[0].AxisX.Interval = 1;
-
-            _chart.ChartAreas[0].AxisY.Minimum = 0;
-            _chart.ChartAreas[0].AxisY.Maximum = double.NaN;
-        }
-
-        public Chart Build()
-        {
-            return _chart;
-        }
-
-        public ColumnChartBuilder<TKey, TValue> Title(string title)
-        {
-            _chart.Titles.Add(title);
+            base.Title(title);
 
             return this;
         }
 
-        public ColumnChartBuilder<TKey, TValue> WithLegend(string legendTitle = "")
+        public new ColumnChartBuilder<TKey, TValue> WithLegend(string legendTitle = "")
         {
-            _chart.Legends.Add(new Legend
-            {
-                Title = legendTitle
-            });
+            base.WithLegend(legendTitle);
 
             return this;
         }
 
-        public ColumnChartBuilder<TKey, TValue> AxesTitles(string xAxisTitle = "", string yAxisTitle = "")
+        public new ColumnChartBuilder<TKey, TValue> AxesTitles(string xAxisTitle = "", string yAxisTitle = "")
         {
-            _chart.ChartAreas[0].AxisX.Title = xAxisTitle;
-            _chart.ChartAreas[0].AxisY.Title = yAxisTitle;
+            base.AxesTitles(xAxisTitle, yAxisTitle);
 
             return this;
         }
 
-        public ColumnChartBuilder<TKey, TValue> Height(int height)
+        public new ColumnChartBuilder<TKey, TValue> Height(int height)
         {
-            _chart.Height = height;
+            base.Height(height);
 
             return this;
         }
  
-        public ColumnChartBuilder<TKey, TValue> Width(int width)
+        public new ColumnChartBuilder<TKey, TValue> Width(int width)
         {
-            _chart.Width = width;
+            base.Width(width);
 
             return this;
         }
@@ -71,13 +47,13 @@ namespace EuroFunds.Statistics
                 Name = seriesName,
                 ChartType = SeriesChartType.Column
             };
-
+            
             foreach (var entry in values)
             {
                 series.Points.AddXY(entry.Key, entry.Value);
             }
 
-            _chart.Series.Add(series);
+            Chart.Series.Add(series);
 
             return this;
         }
